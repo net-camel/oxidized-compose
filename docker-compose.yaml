@@ -1,0 +1,21 @@
+services:
+  oxidized:
+    image: netcamel/oxidized-azure-devops
+    container_name: oxidized
+    volumes:
+      - ./config:/home/oxidized/.config/oxidized/
+      - ./data:/home/oxidized/.config/oxidized/data
+      - ./logs:/home/oxidized/.config/oxidized/logs
+      - ./keys:/home/oxidized/.ssh/
+    restart: unless-stopped
+    networks:
+      - frontend
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.oxidized.rule=Host(`oxidized.netcamel.com`)
+      - traefik.http.routers.oxidized.entrypoints=websecure
+      - traefik.http.routers.oxidized.tls=true+
+      - traefik.http.routers.oxidized.middlewares=oxidized-auth@file
+networks:
+  frontend:
+    external: true

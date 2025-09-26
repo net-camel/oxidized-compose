@@ -1,0 +1,73 @@
+---
+resolve_dns: false
+interval: 43200
+debug: false
+run_once: false
+threads: 30
+use_max_threads: false
+timeout: 30
+timelimit: 500
+retries: 3
+prompt: !ruby/regexp /^([\w.@-]+[#>]\s?)$/
+next_adds_job: false
+groups:
+  group1:
+    username: backups
+    password: changeme
+  group2:
+    username: backups
+    vars:
+      auth_methods: ["publickey"]
+      ssh_keys: "/home/oxidized/.ssh/id_rsa"
+
+group_map: {}
+
+models: {}
+pid: "/home/oxidized/.config/oxidized/pid"
+extensions:
+  oxidized-web:
+    load: true
+    listen: 0.0.0.0
+    port: 8888
+crash:
+  directory: "/home/oxidized/.config/oxidized/crashes"
+  hostnames: false
+stats:
+  history_size: 10
+input:
+  default: ssh, telnet
+  debug: false
+  ssh:
+    secure: false
+  ftp:
+    passive: true
+  utf8_encoded: true
+output:
+  default: git
+  git:
+    user: Oxidized
+    email: changeme
+    single_repo: true
+    repo: "/home/oxidized/.config/oxidized/data/backups.git"
+source:
+  default: jsonfile
+  jsonfile:
+    file: "/home/oxidized/.config/oxidized/router.json"
+    map:
+      name: name
+      ip: ip
+      model: os
+      username: username
+      password: password
+      group: group
+    vars_map:
+      enable: enable
+logger:
+  level: info
+hooks:
+  push_to_remote:
+    type: githubrepo
+    events: [post_store]
+    remote_repo: changeme
+    publickey: /home/oxidized/.ssh/id_rsa.pub
+    privatekey: /home/oxidized/.ssh/id_rsa
